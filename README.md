@@ -2,9 +2,24 @@
 
 A practical introduction to **Pydantic v2** for validating, transforming, and serializing Python data. Each tutorial is self-contained and can be copied into a Python file and run.
 
+## Worked case study
+
+[Open the executed Pydantic case-study notebook](pydantic-advanced-case-study.ipynb).
+
+Follow eight synthetic lead records from messy input through validation, error reporting, serialization and a final intake decision. Includes a chart, assertions, strict versus permissive validation, nested models, validators, tagged unions and function validation. No API keys or external services are needed.
+
+```bash
+python -m pip install -r requirements.txt
+python case_study.py
+python -m pytest -q
+python execute_notebook.py
+```
+
+Reusable code: [`case_study.py`](case_study.py). Tests: [`tests/test_case_study.py`](tests/test_case_study.py). The original introductory tutorials remain below.
+
 ## Setup
 
-Use Python 3.9 or newer and install Pydantic:
+Use Python 3.11 or newer and install Pydantic:
 
 ```bash
 python -m pip install "pydantic>=2,<3"
