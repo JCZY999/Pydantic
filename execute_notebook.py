@@ -10,7 +10,7 @@ from jupyter_client import KernelManager
 from jupyter_client.kernelspec import KernelSpecManager
 
 
-def main():
+def main() -> None:
     root = Path(__file__).resolve().parent
     path = root / "pydantic-advanced-case-study.ipynb"
     notebook = nbformat.read(path, as_version=4)

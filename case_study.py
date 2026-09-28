@@ -1,12 +1,26 @@
 """Synthetic lead-intake case study. No network calls or messaging side effects."""
 from copy import deepcopy
-from typing import Annotated, Literal, Self
+from typing import Annotated, Any, Literal, Self, TypeAlias, TypedDict
 from uuid import UUID
 
 from pydantic import (
     AwareDatetime, BaseModel, ConfigDict, Field, StrictBool,
     ValidationError, field_validator, model_validator, validate_call,
 )
+
+# External payloads may contain any value, including deliberately invalid data.
+RawRecord: TypeAlias = dict[str, Any]
+
+
+class ValidationIssue(TypedDict):
+    location: list[str | int]
+    type: str
+    message: str
+
+
+class RejectedRecord(TypedDict):
+    row: int
+    errors: list[ValidationIssue]
 
 
 class Contact(BaseModel):
@@ -42,9 +56,9 @@ class Lead(BaseModel):
         return self
 
 
-def sample_records() -> list[dict]:
+def sample_records() -> list[RawRecord]:
     """Eight deliberately constructed examples, not a measured customer sample."""
-    base = dict(lead_id="1", business_id="00000000-0000-0000-0000-000000000001",
+    base: RawRecord = dict(lead_id="1", business_id="00000000-0000-0000-0000-000000000001",
                 contact={"name": "  Example Person  ", "phone": "+12025550101"},
                 service="interior", received_at="2026-01-15T12:00:00Z",
                 marketing_consent=True, consent_source="web_form",
@@ -62,8 +76,9 @@ def sample_records() -> list[dict]:
     return records
 
 
-def validate_batch(records: list[dict]) -> tuple[list[Lead], list[dict]]:
-    accepted, rejected = [], []
+def validate_batch(records: list[RawRecord]) -> tuple[list[Lead], list[RejectedRecord]]:
+    accepted: list[Lead] = []
+    rejected: list[RejectedRecord] = []
     for row_number, record in enumerate(records, 1):
         try:
             accepted.append(Lead.model_validate(record))
